@@ -1,0 +1,115 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            .form {
+                border: #323232 solid 1px;
+                margin: auto;
+                padding: 10px;
+                width: 70vw;
+                height: 100%;
+            }
+
+            .form__input {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .form__input>div {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .form__button {
+                margin-top: 10px;
+                width: 100%;
+            }
+
+            .container {
+                position: relative;
+                overflow-x: auto;
+                border: #323232 solid 1px;
+                margin: 10px auto;
+                padding: 10px;
+                width: 70vw;
+                height: 300px;
+            }
+
+            .container__header {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+        </style>
+        
+        <script>
+        	function submitHandler() { //서버측에 값을 전송하기 전에 XSS에 취약한 특수 문자들에 대해서 치환하는 기능의 함수
+        		// name속성값이 keyword인 input을 찾아서 변수에 저장
+        		const keywordInput = document.querySelector("input[name='keyword']");
+                
+        		// input 요소의 현재 입력값을 가져옴
+        		let keywordValue = keywordInput.value;
+
+        		// XSS 공격방지를 위해 입력 값 치환
+        		// 정규식 'g'는 문자열에서 해당하는 모든 문자를 바꿈
+                keywordValue = keywordValue.replace(/&/g, "&amp;");
+                keywordValue = keywordValue.replace(/"/g, "&quot;");
+                keywordValue = keywordValue.replace(/</g, "&lt;");
+                keywordValue = keywordValue.replace(/>/g, "&gt;");
+                keywordValue = keywordValue.replace(/'/g, "&#x27;");
+                keywordValue = keywordValue.replace(/\//g, "&#x2F;");
+                keywordValue = keywordValue.replace(/\(/g, "&#40;");
+                keywordValue = keywordValue.replace(/\)/g, "&#41;");
+
+                // 특수문자가 변혼환 문자열로 input 값 다시 설정
+                keywordInput.value = keywordValue;
+                
+                // form 제출을 진행하기 위해 true로 반환
+        		return true;
+        	
+        	}
+        </script>
+        <title>Reflected XSS 공격</title>
+    </head>
+
+    <body>
+        <h1>Reflected XSS 공격 </h1>
+
+        <div class="form">
+            <form action="reflected4.jsp" method="get" onsubmit="return submitHandler()">
+                <div class="form__input">
+                    <div>
+                        <span> 검색 </span>
+                        <input type="text" name="keyword" />
+                    </div>
+                </div>
+                <input class="form__button" type="submit" value=" 검색 " />
+            </form>
+        </div>
+
+        <div class="container">
+            <%
+            	request.setCharacterEncoding("UTF-8");
+            	//String keyword = request.getParameter("keyword"); // 해당 파라미터가 없으면 null값 반환됨
+            	//if(keyword == null) {
+            	//	keyword = "";
+            	//}
+            %>
+            
+            <!-- jstl 라이브러리는 java코드가 아니기 때문에 자바스크립트릿 태그 사용 불가 -->
+            <c:set var="keyword" value= "${param.keyword}" />
+			<c:if test="${empty keyword }">
+				<c:set var = "keyword" value=""/>
+			</c:if>
+                <div class="container__header"> 검색어 <c:out value="${keyword}"/> <!-- keyword 변수에 저장된 값이 출력 -->
+                </div>
+        </div>
+
+    </body>
+
+    </html>
