@@ -1,0 +1,23 @@
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+	function testIt() {
+		//입력된 내용 추출해서 test-innerHTML 영역에 출력
+		var input = document.getElementById('input-test').value;
+		//var testInnerHtml = document.getElementById('test-innerHTML');
+		//testInnerHtml.innerHTML = input; // html 해석해서 해당 객체에 삽입이 되므로 해석이 필요한 로직이 아닌경우 text 속성을 사용
+		// jquery 사용 코드로 변경
+		var testHtml = document.getElementById('test-innerHTML');
+		//$(testHtml).html(input); // 스크립트 태그 해석해서 스크립트 실행까지 진행 - xss 공격에 최약한 메소드
+		$(testHtml).text(input); //파라미터로 전달되는 값 그대로 출력하는 메소드
+	}
+</script>
+<head>this is a test</head>
+<body>  
+    <input id="input-test" type="text" name="foo" />
+    <input type="button" onClick="testIt();" value="test!"/>
+    <div id="test-html">
+    </div>
+    <div id="test-innerHTML">
+    </div>
+</body>
